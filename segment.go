@@ -86,10 +86,14 @@ func (scs Segments) DefString() string {
 	var currentScope SegmentScope
 	buf := []string{}
 	for _, sc := range scs {
+		scDef := sc.DefStringWithoutScope()
+		if scDef == "" {
+			continue
+		}
 		if currentScope != sc.Scope {
-			buf = append(buf, sc.Scope.String()+sc.DefStringWithoutScope())
+			buf = append(buf, sc.Scope.String()+scDef)
 		} else {
-			buf = append(buf, sc.DefStringWithoutScope())
+			buf = append(buf, scDef)
 		}
 		currentScope = sc.Scope
 	}
@@ -146,8 +150,8 @@ func NewAndExpression(inner ...OrExpression) AndExpression {
 	return AndExpression(inner)
 }
 
-func NewSingleAndExpression(e Expression) AndExpression {
-	return NewAndExpression(NewOrExpression(e))
+func NewSingleAndExpression(es ...Expression) AndExpression {
+	return NewAndExpression(NewOrExpression(es...))
 }
 
 type OrExpression []Expression

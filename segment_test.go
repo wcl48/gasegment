@@ -25,6 +25,11 @@ func checkParse(t *testing.T, set testset) {
 }
 
 func TestSegment(t *testing.T) {
+	s := Segments{}
+	if s.DefString() != "" {
+		t.Errorf("empty Segments.DefString() must be \"\"")
+	}
+
 	for _, s := range set {
 		checkStringify(t, s)
 		checkParse(t, s)

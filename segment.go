@@ -176,13 +176,13 @@ type Expression struct {
 }
 
 func (c Expression) EscapedValue() string {
-	return escapeExpressionValue(c.Value)
+	return EscapeExpressionValue(c.Value)
 }
 
-func escapeExpressionValue(s string) string {
+func EscapeExpressionValue(s string) string {
 	return strings.Replace(strings.Replace(s, ";", `\;`, -1), ",", `\,`, -1)
 }
-func unEscapeExpressionValue(s string) string {
+func UnEscapeExpressionValue(s string) string {
 	return strings.Replace(strings.Replace(s, `\;`, ";", -1), `\,`, ",", -1)
 }
 

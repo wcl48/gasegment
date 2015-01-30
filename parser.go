@@ -218,7 +218,7 @@ func parseExpression(definition string) (Expression, error) {
 
 	e.Target = DimensionOrMetric(s[:opi[0]]) // TODO 正しいかチェック?
 	e.Operator = Operator(s[opi[0]:opi[1]])
-	e.Value = unEscapeExpressionValue(s[opi[1]:])
+	e.Value = UnEscapeExpressionValue(s[opi[1]:])
 	return e, nil
 }
 

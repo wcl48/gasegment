@@ -41,6 +41,14 @@ func init() {
 	OpSeparatorRe = regexp.MustCompile(strings.Join(opbuf, "|"))
 }
 
+func MustParse(definition string) Segments {
+	s, err := Parse(definition)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
 func Parse(definition string) (Segments, error) {
 	parts := splitByFirstRegexpGroup(definition, SegmentConditionRe)
 	ret := []Segment{}

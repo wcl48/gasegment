@@ -1,12 +1,13 @@
 package gasegment
 
 import (
-	"fmt"
+	"flag"
+	"net/http"
 	"reflect"
 	"regexp"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
+	analytics "google.golang.org/api/analytics/v3"
 )
 
 func checkStringify(t *testing.T, set testset) {
@@ -77,12 +78,96 @@ func TestSortScope(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	spew.Dump(ss)
-	fmt.Println(len(ss))
-
 	if ss.DefString() != expected {
 		t.Error("bad sort")
 	}
 }
 
-users::condition::ga:pagePath!~^\Q/lk/\E;sessions::condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none)
+// Flags
+var (
+	testRequest = flag.Bool("runrequest", false, "Run test request to google analytics")
+	clientID    = flag.String("clientid", "", "OAuth 2.0 Client ID.  If non-empty, overrides --clientid_file")
+	secret      = flag.String("secret", "", "OAuth 2.0 Client Secret.  If non-empty, overrides --secret_file")
+)
+
+func TestValidSegment(t *testing.T) {
+	flag.Parse()
+
+	var client *http.Client
+	var profileId string
+	var svc *analytics.Service
+	if *testRequest {
+
+		if clientID == nil || secret == nil {
+			panic("bad args")
+			client = getTestClient(*clientID, *secret)
+
+			svc, err := analytics.New(client)
+			if err != nil {
+				panic(err)
+			}
+
+			accountCall := svc.Management.AccountSummaries.List()
+			accounts, err := accountCall.Do()
+			if err != nil {
+				panic(err)
+			}
+
+		LOOP:
+			for _, account := range accounts.Items {
+				for _, wp := range account.WebProperties {
+					for _, pr := range wp.Profiles {
+						profileId = pr.Id
+						break LOOP
+					}
+				}
+			}
+		}
+	}
+
+	getSegmentCall := func(segments Segments) *analytics.DataGaGetCall {
+		call := svc.Data.Ga.Get("ga:"+profileId, "yesterday", "today", "ga:sessions")
+		call.SamplingLevel("FASTER")
+
+		call.Segment(segments.DefString())
+		return call
+	}
+
+	for _, valid := range valids {
+		ss, err := Parse(valid)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !ss.IsValid() {
+			t.Errorf("segment '%s' should be valid", ss.DefString())
+		}
+		if client != nil {
+			c := getSegmentCall(ss)
+			if _, err := c.Do(); err != nil {
+				t.Errorf("segment '%s' must suceed to call", valid)
+			}
+		}
+	}
+
+	for _, invalid := range invalids {
+		ss, err := Parse(invalid)
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if ss.IsValid() {
+			t.Errorf("segment '%s' should not be valid", ss.DefString())
+		}
+		if client != nil {
+			c := getSegmentCall(ss)
+
+			_, err := c.Do()
+			if err == nil {
+				t.Errorf("segment '%s' must fail to call", invalid)
+			}
+		}
+	}
+
+}

@@ -1,6 +1,9 @@
 package gasegment
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 type DimensionOrMetric string
 
@@ -78,14 +81,38 @@ const (
 
 type Segments []Segment
 
+var scopeSortMap = map[SegmentScope]int{
+	UserScope:    0,
+	SessionScope: 1,
+}
+
+type sortByScope []Segment
+
+func (s sortByScope) Len() int {
+	return len(s)
+}
+
+func (s sortByScope) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s sortByScope) Less(i, j int) bool {
+	return scopeSortMap[s[i].Scope] < scopeSortMap[s[j].Scope]
+}
+
 func NewSegments(cs ...Segment) Segments {
 	return Segments(cs)
 }
 
 func (scs Segments) DefString() string {
+	workSegments := make([]Segment, len(scs))
+	copy(workSegments, scs)
+
+	sort.Sort(sortByScope(workSegments))
+
 	var currentScope SegmentScope
 	buf := []string{}
-	for _, sc := range scs {
+	for _, sc := range workSegments {
 		scDef := sc.DefStringWithoutScope()
 		if scDef == "" {
 			continue

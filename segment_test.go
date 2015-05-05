@@ -1,9 +1,12 @@
 package gasegment
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func checkStringify(t *testing.T, set testset) {
@@ -63,3 +66,23 @@ func TestSplitByFirstRegexpGroup(t *testing.T) {
 
 	checkSplit(t, "a;->b;->>c", SequenceSeparatorRe, []string{"a", ";->", "b", ";->>", "c"})
 }
+
+func TestSortScope(t *testing.T) {
+	input := `sessions::condition::ga:deviceCategory==desktop;users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::!ga:channelGrouping==(none);condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0`
+
+	expected := `users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none)`
+
+	ss, err := Parse(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spew.Dump(ss)
+	fmt.Println(len(ss))
+
+	if ss.DefString() != expected {
+		t.Error("bad sort")
+	}
+}
+
+users::condition::ga:pagePath!~^\Q/lk/\E;sessions::condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none);condition::!ga:channelGrouping==(none)

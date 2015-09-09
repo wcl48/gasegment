@@ -127,6 +127,16 @@ func (scs Segments) DefString() string {
 	return strings.Join(buf, ";")
 }
 
+func (scs *Segments) AddSegment(ss ...Segment) {
+	*scs = append(*scs, ss...)
+}
+
+func (scs *Segments) AddSegments(sgs ...Segments) {
+	for _, sg := range sgs {
+		scs.AddSegment(sg...)
+	}
+}
+
 type Segment struct {
 	Scope     SegmentScope
 	Type      SegmentType

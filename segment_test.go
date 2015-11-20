@@ -139,9 +139,6 @@ func TestValidSegment(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if !ss.IsValid() {
-			t.Errorf("segment '%s' should be valid", ss.DefString())
-		}
 		if client != nil {
 			c := getSegmentCall(ss)
 			if _, err := c.Do(); err != nil {
@@ -157,9 +154,6 @@ func TestValidSegment(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if ss.IsValid() {
-			t.Errorf("segment '%s' should not be valid", ss.DefString())
-		}
 		if client != nil {
 			c := getSegmentCall(ss)
 
@@ -169,5 +163,4 @@ func TestValidSegment(t *testing.T) {
 			}
 		}
 	}
-
 }

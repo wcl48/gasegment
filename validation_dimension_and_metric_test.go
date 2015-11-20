@@ -21,7 +21,7 @@ func TestValidateDimensionOrMetric(t *testing.T) {
 	}
 
 	for _, pattern := range table {
-		ca, err := ColumnForDimensionOrMetric(pattern.dm)
+		ca, err := GetDimensionOrMetricAttributes(pattern.dm)
 		if pattern.valid {
 			if err != nil {
 				t.Errorf("unexpected error for %s : %s", pattern.dm, err.Error())

@@ -16,7 +16,7 @@ func (e DimensionOrMetricError) Error() string { return string(e) }
 
 var NoSuchDimensionOrMetric = DimensionOrMetricError("no such dimension or metric")
 
-type ColumnAttributes struct {
+type DimensionOrMetricAttributes struct {
 	Id                      string
 	ReplacedBy              string
 	Type                    string
@@ -36,7 +36,7 @@ type ColumnAttributes struct {
 	pattern *regexp.Regexp
 }
 
-func (ca *ColumnAttributes) Match(dm string) bool {
+func (ca *DimensionOrMetricAttributes) Match(dm string) bool {
 	if ca.pattern != nil {
 		matches := ca.pattern.FindStringSubmatch(dm)
 		if len(matches) < 2 {
@@ -53,14 +53,10 @@ func (ca *ColumnAttributes) Match(dm string) bool {
 }
 
 var columns analytics.Columns
-var dmDefMap = map[string]ColumnAttributes{}
-var templateMatches []struct {
-	Pattern          *regexp.Regexp
-	ColumnAttributes *ColumnAttributes
-}
+var dmDefMap = map[string]DimensionOrMetricAttributes{}
 
-func convertAttributes(id string, column *analytics.Column) ColumnAttributes {
-	ca := ColumnAttributes{
+func convertAttributes(id string, column *analytics.Column) DimensionOrMetricAttributes {
+	ca := DimensionOrMetricAttributes{
 		Id:                id,
 		ReplacedBy:        column.Attributes["replacedBy"],
 		Type:              column.Attributes["type"],
@@ -101,12 +97,12 @@ func init() {
 	}
 }
 
-func ColumnForDimensionOrMetric(dm string) (ColumnAttributes, error) {
+func GetDimensionOrMetricAttributes(dm string) (DimensionOrMetricAttributes, error) {
 	for _, ca := range dmDefMap {
 		if ca.Match(dm) {
 			return ca, nil
 		}
 	}
 
-	return ColumnAttributes{}, NoSuchDimensionOrMetric
+	return DimensionOrMetricAttributes{}, NoSuchDimensionOrMetric
 }

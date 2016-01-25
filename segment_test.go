@@ -97,29 +97,28 @@ func TestValidSegment(t *testing.T) {
 	var profileId string
 	var svc *analytics.Service
 	if *testRequest {
-
-		if clientID == nil || secret == nil {
+		if *clientID == "" || *secret == "" {
 			panic("bad args")
-			client = getTestClient(*clientID, *secret)
+		}
+		client = getTestClient(*clientID, *secret)
 
-			svc, err := analytics.New(client)
-			if err != nil {
-				panic(err)
-			}
+		svc, err := analytics.New(client)
+		if err != nil {
+			panic(err)
+		}
 
-			accountCall := svc.Management.AccountSummaries.List()
-			accounts, err := accountCall.Do()
-			if err != nil {
-				panic(err)
-			}
+		accountCall := svc.Management.AccountSummaries.List()
+		accounts, err := accountCall.Do()
+		if err != nil {
+			panic(err)
+		}
 
-		LOOP:
-			for _, account := range accounts.Items {
-				for _, wp := range account.WebProperties {
-					for _, pr := range wp.Profiles {
-						profileId = pr.Id
-						break LOOP
-					}
+	LOOP:
+		for _, account := range accounts.Items {
+			for _, wp := range account.WebProperties {
+				for _, pr := range wp.Profiles {
+					profileId = pr.Id
+					break LOOP
 				}
 			}
 		}
@@ -132,7 +131,6 @@ func TestValidSegment(t *testing.T) {
 		call.Segment(segments.DefString())
 		return call
 	}
-
 	for _, valid := range valids {
 		ss, err := Parse(valid)
 		if err != nil {
@@ -150,8 +148,8 @@ func TestValidSegment(t *testing.T) {
 	for _, invalid := range invalids {
 		ss, err := Parse(invalid)
 
-		if err != nil {
-			t.Fatal(err)
+		if err == nil {
+			t.Fatalf("parse '%s' must be error", invalid)
 		}
 
 		if client != nil {

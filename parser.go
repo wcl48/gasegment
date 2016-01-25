@@ -216,7 +216,10 @@ func parseExpression(definition string) (Expression, error) {
 	}
 	opi := idxes[0]
 
-	e.Target = DimensionOrMetric(s[:opi[0]]) // TODO 正しいかチェック?
+	e.Target = DimensionOrMetric(s[:opi[0]])
+	if e.Target == "" {
+		return Expression{}, errors.New("empty dimension or metric")
+	}
 	e.Operator = Operator(s[opi[0]:opi[1]])
 	e.Value = UnEscapeExpressionValue(s[opi[1]:])
 	return e, nil

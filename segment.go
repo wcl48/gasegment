@@ -108,7 +108,7 @@ func (scs Segments) DefString() string {
 	workSegments := make([]Segment, len(scs))
 	copy(workSegments, scs)
 
-	sort.Sort(sortByScope(workSegments))
+	sort.Stable(sortByScope(workSegments))
 
 	var currentScope SegmentScope
 	buf := []string{}

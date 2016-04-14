@@ -71,15 +71,15 @@ func TestSplitByFirstRegexpGroup(t *testing.T) {
 func TestSortScope(t *testing.T) {
 	input := `sessions::condition::ga:deviceCategory==desktop;users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::!ga:channelGrouping==(none);condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0`
 
-	expected := `users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none)`
+	expected := `users::condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;condition::ga:pagePath!~^\Q/lk/\E,ga:pagePath!~^\Q/netacho/\E;sessions::condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::ga:pagePath=~^\Q/inquiry/\E,ga:pagePath=~^\Q/inquiry/\E;condition::ga:deviceCategory==desktop;condition::!ga:channelGrouping==(none);condition::ga:goal4Completions>0`
 
 	ss, err := Parse(input)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if ss.DefString() != expected {
-		t.Error("bad sort")
+	if actual := ss.DefString(); expected != actual {
+		t.Errorf("bad sort\nexpected\n%s\nactual\n%s", expected, actual)
 	}
 }
 

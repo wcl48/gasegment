@@ -8,18 +8,6 @@ import (
 // go get -v google.golang.org/api/analyticsreporting/v4
 // (https://github.com/google/google-api-go-client/blob/master/analyticsreporting/v4/analyticsreporting-gen.go)
 
-func ConvertToV4Version(src *Segment) (*analyticsreporting.DynamicSegment, error) {
-	name := ""
-	sessionSegment := &analyticsreporting.SegmentDefinition{}
-	userSegment := &analyticsreporting.SegmentDefinition{}
-	dst := &analyticsreporting.DynamicSegment{
-		Name:           name,
-		SessionSegment: sessionSegment,
-		UserSegment:    userSegment,
-	}
-	return dst, nil
-}
-
 /*
 # gaesegment
 
@@ -28,25 +16,23 @@ Segment
   Type: SegmentType{ConditionSegment, SequenceSegment}
   Condition:
     Exclude: bool{true/false}
-    AndExpression:
-      OrExpression[]:
-        Expression[]
-          MetricScope: MetricScope{Default,PerHit,PerSession,PerUser}
-          Target: DimensionOrMetric{}
-          Operator: Operator{Equal,NotEqual,LessThan,LessThanEqual,GreaterThan,GreaterThanEqual,Between,InList,ContainsSubstring,NotContainsSubstring,Regexp,NotRegexp}
-          Value: string{}
+    AndExpression as OrExpression[]:
+      Expression[]
+        * MetricScope: MetricScope{Default,PerHit,PerSession,PerUser}
+        Target: DimensionOrMetric{}
+        Operator: Operator{Equal,NotEqual,LessThan,LessThanEqual,GreaterThan,GreaterThanEqual,Between,InList,ContainsSubstring,NotContainsSubstring,Regexp,NotRegexp}
+        Value: string{}
   Sequence:
     Not: bool{true/false}
     FirstHitMatchesFirstStep: bool{true/false}
     SequenceSteps[]:
       Type: SequenceStepType{FirstStep,Precedes,ImmediatelyPrecedes}
-      AndExpression:
-        OrExpression[]:
-          Expression[]
-            MetricScope: MetricScope{Default,PerHit,PerSession,PerUser}
-            Target: DimensionOrMetric{}
-            Operator: Operator{Equal,NotEqual,LessThan,LessThanEqual,GreaterThan,GreaterThanEqual,Between,InList,ContainsSubstring,NotContainsSubstring,Regexp,NotRegexp}
-            Value: string{}
+      AndExpression as OrExpression[]:
+        Expression[]
+          MetricScope: MetricScope{Default,PerHit,PerSession,PerUser}
+          Target: DimensionOrMetric{}
+          Operator: Operator{Equal,NotEqual,LessThan,LessThanEqual,GreaterThan,GreaterThanEqual,Between,InList,ContainsSubstring,NotContainsSubstring,Regexp,NotRegexp}
+          Value: string{}
 
 # analyticsreporting
 
@@ -74,7 +60,7 @@ DynamicSegment
                 MaxComparisonValue: string{}
                 MetricName: string{}
                 Operator: string{"LESS_THAN","GREATER_THAN","EQUAL","BETWEEN"} // LT,GT?
-                Scope: string{"UNSPECIFIED_SCOPE","HIT","SESSION","USER"}
+                Scope: string{"UNSPECIFIED_SCOPE","PRODUCT","HIT","SESSION","USER"}
                 ForceSendFields[] string{}
               Not: bool{true/false}
               ForceSendFields[] string{}
@@ -96,7 +82,7 @@ DynamicSegment
               MaxComparisonValue: string{}
               MetricName: string{}
               Operator: string{"LESS_THAN","GREATER_THAN","EQUAL","BETWEEN"} // LT,GT?
-              Scope: string{"UNSPECIFIED_SCOPE","HIT","SESSION","USER"}
+              Scope: string{"UNSPECIFIED_SCOPE","PRODUCT","HIT","SESSION","USER"}
               ForceSendFields[] string{}
             Not: bool{true/false}
             ForceSendFields[] string{}
@@ -125,7 +111,7 @@ DynamicSegment
                 MaxComparisonValue: string{}
                 MetricName: string{}
                 Operator: string{"LESS_THAN","GREATER_THAN","EQUAL","BETWEEN"} // LT,GT?
-                Scope: string{"UNSPECIFIED_SCOPE","HIT","SESSION","USER"}
+                Scope: string{"UNSPECIFIED_SCOPE","PRODUCT","HIT","SESSION","USER"}
                 ForceSendFields[] string{}
               Not: bool{true/false}
               ForceSendFields[] string{}
@@ -147,7 +133,7 @@ DynamicSegment
               MaxComparisonValue: string{}
               MetricName: string{}
               Operator: string{"LESS_THAN","GREATER_THAN","EQUAL","BETWEEN"} // LT,GT?
-              Scope: string{"UNSPECIFIED_SCOPE","HIT","SESSION","USER"}
+              Scope: string{"UNSPECIFIED_SCOPE","PRODUCT","HIT","SESSION","USER"}
               ForceSendFields[] string{}
             Not: bool{true/false}
             ForceSendFields[] string{}

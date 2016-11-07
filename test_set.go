@@ -1,11 +1,11 @@
 package gasegment
 
-type testset struct {
+type TestSet struct {
 	definition string
 	object     Segments
 }
 
-var set = []testset{{
+var set = []TestSet{{
 	definition: "users::condition::ga:pagePath==/aiueo",
 	object: NewSegments(Segment{
 		Scope: UserScope,
@@ -164,7 +164,7 @@ var set = []testset{{
 		}),
 }}
 
-var checkDefs = []string{
+var TestCheckDefs = []string{
 	"sessions::condition::ga:userType==New Visitor",
 	"sessions::condition::ga:userType==Returning Visitor",
 	"sessions::condition::ga:medium=~^(cpc|ppc|cpa|cpm|cpv|cpp)$",

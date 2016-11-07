@@ -1094,6 +1094,7 @@ var TestCheckDefs = []string{
 	"sessions::condition::ga:deviceCategory=@desktop;condition::ga:landingPagePath==/www.example.co.jp/otona/ldp/top/index.html;condition::ga:pagePath==/www.example.co.jp/saficpws/1.1.1",
 	"sessions::condition::ga:deviceCategory=@desktop;condition::ga:landingPagePath==/www.example.co.jp/otona/ldp/top/index.html",
 	"sessions::condition::ga:deviceCategory=@desktop;condition::ga:pagePath=@embed,ga:pagePath==/files/embed/cartonbox.html,ga:pagePath=@/files/cp/kaitori,ga:pagePath=@/cd/files/kaitori1307,ga:pagePath==/files/selltop.html;ga:pagePath=@sell,ga:pagePath==/files/embed/cartonbox.html,ga:pagePath=@/files/cp/kaitori,ga:pagePath=@/cd/files/kaitori1307,ga:pagePath==/files/selltop.html",
+	"users::sequence::!^ga:pagePath==/aiueo;->ga:pagePath==/aiueo2;->>ga:pagePath==/aiueo3",
 }
 
 var valids = []string{

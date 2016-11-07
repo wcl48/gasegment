@@ -8,7 +8,7 @@ import (
 
 // MatchType
 const (
-	MatchTypeUnspecfied          = "UNSPECIFIED_MATCH_TYPE"
+	MatchTypeUnspecfied          = "" // "UNSPECIFIED_MATCH_TYPE" // omitempty
 	MatchTypePrecedes            = "PRECEDES"
 	MatchTypeImmediatelyPrecedes = "IMMEDIATELY_PRECEDES"
 )
@@ -41,7 +41,7 @@ func DetectMatchType(stepType gasegment.SequenceStepType) (string, error) {
 
 // Scope
 const (
-	ScopeUnspecified = "UNSPECIFIED_SCOPE"
+	ScopeUnspecified = "" // UNSPECIFIED_SCOPE // omitempty
 	ScopeProduct     = "PRODUCT"
 	ScopeHit         = "HIT"
 	ScopeSession     = "SESSION"
@@ -67,18 +67,21 @@ func DetectScope(metricScope gasegment.MetricScope) (string, error) {
 
 // Operator : string representation for analyticsreporting.operator
 const (
-	OperatorUnspecified  = "UNSPECIFIED_OPERATOR"
-	OperatorUnspecified2 = "OPERATOR_UNSPECIFIED" // xxx
-	OperatorLessThan     = "LESS_THAN"
-	OperatorGreaterThan  = "GREATER_THAN"
-	OperatorEqual        = "EQUAL"
-	OperatorBetween      = "BETWEEN"
-	OperatorRegexp       = "REGEXP"
-	OperatorBeginsWith   = "BEGINS_WITH"
-	OperatorEndsWith     = "ENDS_WITH"
-	OperatorPartial      = "PARTIAL"
-	OperatorExact        = "EXACT"
-	OperatorInList       = "IN_LIST"
+	OperatorUnspecified        = "" // "UNSPECIFIED_OPERATOR" // omitempty
+	OperatorUnspecified2       = "" // "OPERATOR_UNSPECIFIED" // omitempty
+	OperatorLessThan           = "LESS_THAN"
+	OperatorGreaterThan        = "GREATER_THAN"
+	OperatorEqual              = "EQUAL"
+	OperatorBetween            = "BETWEEN"
+	OperatorRegexp             = "REGEXP"
+	OperatorBeginsWith         = "BEGINS_WITH"
+	OperatorEndsWith           = "ENDS_WITH"
+	OperatorPartial            = "PARTIAL"
+	OperatorExact              = "EXACT"
+	OperatorInList             = "IN_LIST"
+	OperatorNumericLessThan    = "NUMERIC_LESS_THAN"
+	OperatorNumericGreaterThan = "NUMERIC_GREATER_THAN"
+	OperatorNumericBetween     = "NUMERIC_BETWEEN"
 )
 
 // DetectOperatorOnMetric :
@@ -176,21 +179,21 @@ func DetectOperatorOnDimension(op gasegment.Operator) (opStr string, ok bool, er
 	// of the match expression, boundaries excluded.
 	switch op {
 	case gasegment.Equal:
-		return OperatorEqual, true, nil
+		return OperatorExact, true, nil
 	case gasegment.NotEqual:
-		return OperatorEqual, false, nil
+		return OperatorExact, false, nil
 	case gasegment.LessThan:
-		return OperatorLessThan, true, nil
+		return OperatorNumericLessThan, true, nil
 	case gasegment.LessThanEqual:
 		// x <= y == !(x > y)
-		return OperatorGreaterThan, false, nil
+		return OperatorNumericGreaterThan, false, nil
 	case gasegment.GreaterThan:
-		return OperatorGreaterThan, true, nil
+		return OperatorNumericGreaterThan, true, nil
 	case gasegment.GreaterThanEqual:
 		// x >= y == !(x < y)
-		return OperatorLessThan, false, nil
+		return OperatorNumericLessThan, false, nil
 	case gasegment.Between:
-		return OperatorBetween, true, nil
+		return OperatorNumericBetween, true, nil
 	case gasegment.InList:
 		return OperatorInList, true, nil
 	case gasegment.ContainsSubstring:

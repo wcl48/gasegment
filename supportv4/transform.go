@@ -10,14 +10,12 @@ import (
 
 // TransformSegments : transform Seguments to DynamicSegment
 func TransformSegments(segments *gasegment.Segments) (*gapi.DynamicSegment, error) {
-	name := ""
+	name := "-"
 	segmentSet := []gasegment.Segment(*segments)
-	sessionSegment := &gapi.SegmentDefinition{
-		SegmentFilters: make([]*gapi.SegmentFilter, 0, len(segmentSet)),
-	}
-	userSegment := &gapi.SegmentDefinition{
-		SegmentFilters: make([]*gapi.SegmentFilter, 0, len(segmentSet)),
-	}
+	sessionSegmentFilters := make([]*gapi.SegmentFilter, 0, len(segmentSet))
+	userSegmentFilters := make([]*gapi.SegmentFilter, 0, len(segmentSet))
+	var sessionSegment *gapi.SegmentDefinition
+	var userSegment *gapi.SegmentDefinition
 
 	for _, segment := range segmentSet {
 		switch segment.Scope {
@@ -26,15 +24,26 @@ func TransformSegments(segments *gasegment.Segments) (*gapi.DynamicSegment, erro
 			if err != nil {
 				return nil, err
 			}
-			userSegment.SegmentFilters = append(userSegment.SegmentFilters, segmentFilter)
+			userSegmentFilters = append(userSegmentFilters, segmentFilter)
 		case gasegment.SessionScope:
 			segmentFilter, err := NewSegmentFilter(&segment)
 			if err != nil {
 				return nil, err
 			}
-			sessionSegment.SegmentFilters = append(sessionSegment.SegmentFilters, segmentFilter)
+			sessionSegmentFilters = append(sessionSegmentFilters, segmentFilter)
 		default:
 			return nil, fmt.Errorf("cannot guess segment scope=%v", segment.Scope)
+		}
+	}
+
+	if len(userSegmentFilters) > 0 {
+		userSegment = &gapi.SegmentDefinition{
+			SegmentFilters: userSegmentFilters,
+		}
+	}
+	if len(sessionSegmentFilters) > 0 {
+		sessionSegment = &gapi.SegmentDefinition{
+			SegmentFilters: sessionSegmentFilters,
 		}
 	}
 	return &gapi.DynamicSegment{
@@ -46,7 +55,7 @@ func TransformSegments(segments *gasegment.Segments) (*gapi.DynamicSegment, erro
 
 // TransformSegment : transform Segument to DynamicSegment
 func TransformSegment(segment *gasegment.Segment) (*gapi.DynamicSegment, error) {
-	name := ""
+	name := "-"
 	switch segment.Scope {
 	case gasegment.UserScope:
 		segmentFilter, err := NewSegmentFilter(segment)

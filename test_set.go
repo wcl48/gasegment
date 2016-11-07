@@ -93,23 +93,75 @@ var set = []testset{{
 }, {
 	definition: "sessions::condition::ga:hour<>10_20;ga:keyword=@aiueo",
 	object: NewSegments(
-        Segment{
-            Scope: SessionScope,
-            Type:  ConditionSegment,
-            Condition: Condition{
-                AndExpression: NewAndExpression(
-                    NewOrExpression(Expression{
-                        Target:   DimensionOrMetric("ga:hour"),
-                        Operator: Between,
-                        Value:    "10_20",
-                    }),NewOrExpression(Expression{
-                        Target:   DimensionOrMetric("ga:keyword"),
-                        Operator: ContainsSubstring,
-                        Value:    "aiueo",
-                    }),
-                ),
-            },
-        }),
+		Segment{
+			Scope: SessionScope,
+			Type:  ConditionSegment,
+			Condition: Condition{
+				AndExpression: NewAndExpression(
+					NewOrExpression(Expression{
+						Target:   DimensionOrMetric("ga:hour"),
+						Operator: Between,
+						Value:    "10_20",
+					}), NewOrExpression(Expression{
+						Target:   DimensionOrMetric("ga:keyword"),
+						Operator: ContainsSubstring,
+						Value:    "aiueo",
+					}),
+				),
+			},
+		}),
+}, {
+	definition: "sessions::condition::ga:pageviews>=10",
+	object: NewSegments(
+		Segment{
+			Scope: SessionScope,
+			Type:  ConditionSegment,
+			Condition: Condition{
+				AndExpression: NewAndExpression(
+					NewOrExpression(Expression{
+						Target:   DimensionOrMetric("ga:pageviews"),
+						Operator: GreaterThanEqual,
+						Value:    "10",
+					}),
+				),
+			},
+		}),
+}, {
+	definition: "sessions::condition::ga:pageviews<=10",
+	object: NewSegments(
+		Segment{
+			Scope: SessionScope,
+			Type:  ConditionSegment,
+			Condition: Condition{
+				AndExpression: NewAndExpression(
+					NewOrExpression(Expression{
+						Target:   DimensionOrMetric("ga:pageviews"),
+						Operator: LessThanEqual,
+						Value:    "10",
+					}),
+				),
+			},
+		}),
+}, {
+	definition: "sessions::condition::ga:hour<>10_20;ga:keyword=@aiueo",
+	object: NewSegments(
+		Segment{
+			Scope: SessionScope,
+			Type:  ConditionSegment,
+			Condition: Condition{
+				AndExpression: NewAndExpression(
+					NewOrExpression(Expression{
+						Target:   DimensionOrMetric("ga:hour"),
+						Operator: Between,
+						Value:    "10_20",
+					}), NewOrExpression(Expression{
+						Target:   DimensionOrMetric("ga:keyword"),
+						Operator: ContainsSubstring,
+						Value:    "aiueo",
+					}),
+				),
+			},
+		}),
 }}
 
 var checkDefs = []string{

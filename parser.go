@@ -20,14 +20,16 @@ func init() {
 	AndSeparatorRe = regexp.MustCompile(`(?:\\.|[^\\])(;)`)
 	OrSeparatorRe = regexp.MustCompile(`(?:\\.|[^\\])(,)`)
 
+	// ORDER IS IMPORTANT.
+	// e.g. using invalid ordering - such as `LessThan, LesthanEqual`, then, regexp is />|>=/, so, ">=" is matching at `>`(LessThan). NG
 	ops := []Operator{
 		Equal,
 		NotEqual,
-		LessThan,
 		LessThanEqual,
-		GreaterThan,
 		GreaterThanEqual,
 		Between,
+		GreaterThan,
+		LessThan,
 		InList,
 		ContainsSubstring,
 		NotContainsSubstring,

@@ -142,9 +142,9 @@ func TestTransform(t *testing.T) {
 		assertJSONEqual(t, expectedJSON, transformedJSON)
 	})
 
-    t.Run("appendix 1", func(t *testing.T){
-        s := "sessions::condition::!ga:landingPagePath=~^\\Qexample.com/blog/xxx/\\E;condition::!ga:landingPagePath=~^\\Qexample.com/yyy/\\E"
-        expectedJSON := `
+	t.Run("appendix 1", func(t *testing.T) {
+		s := "sessions::condition::!ga:landingPagePath=~^\\Qexample.com/blog/xxx/\\E;condition::!ga:landingPagePath=~^\\Qexample.com/yyy/\\E"
+		expectedJSON := `
 {
   "name": "segment_name",
   "sessionSegment": {
@@ -195,12 +195,83 @@ func TestTransform(t *testing.T) {
 `
 		transformedJSON := stringToPayload(t, s, "segment_name")
 		assertJSONEqual(t, expectedJSON, transformedJSON)
-    })
+	})
 
-	// // https://developers.google.com/analytics/devguides/reporting/core/v4/migration
-	// t.Run("1", func(t *testing.T) {
-	// 	s := "users::condition::ga:userGender==Male;users::condition::ga:interestAffinityCategory==Games;sessions::condition::ga:region==Americas;sessions::condition::ga:language==en-u"
-	// 	payload := stringToPayload(t, s)
-	// 	fmt.Println(payload)
-	// })
+	t.Run("appendix 2 (combined with regexp)", func(t *testing.T) {
+		s := "sessions::condition::ga:landingPagePath=~^example.com/blog/(xxx|yyy)/"
+		expectedJSON := `
+{
+  "name": "segment_name",
+  "sessionSegment": {
+    "segmentFilters": [
+      {
+        "simpleSegment": {
+          "orFiltersForSegment": [
+            {
+              "segmentFilterClauses": [
+                {
+                  "dimensionFilter": {
+                    "expressions": [
+                      "^example.com/blog/(xxx|yyy)/"
+                    ],
+                    "dimensionName": "ga:landingPagePath",
+                    "operator": "REGEXP"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+`
+		transformedJSON := stringToPayload(t, s, "segment_name")
+		assertJSONEqual(t, expectedJSON, transformedJSON)
+	})
+
+	t.Run("appendix 2 (combined with or operator)", func(t *testing.T) {
+		s := "sessions::condition::ga:landingPagePath=~^\\Qexample.com/blog/xxx\\E,ga:landingPagePath=~^\\Qexample.com/blog/yyy\\E"
+		expectedJSON := `
+{
+  "name": "segment_name",
+  "sessionSegment": {
+    "segmentFilters": [
+      {
+        "simpleSegment": {
+          "orFiltersForSegment": [
+            {
+              "segmentFilterClauses": [
+                {
+                  "dimensionFilter": {
+                    "operator": "REGEXP",
+                    "expressions": [
+                      "^\\Qexample.com/blog/xxx\\E"
+                    ],
+                    "dimensionName": "ga:landingPagePath"
+                  }
+                },
+                {
+                  "dimensionFilter": {
+                    "operator": "REGEXP",
+                    "expressions": [
+                      "^\\Qexample.com/blog/yyy\\E"
+                    ],
+                    "dimensionName": "ga:landingPagePath"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+`
+		transformedJSON := stringToPayload(t, s, "segment_name")
+		assertJSONEqual(t, expectedJSON, transformedJSON)
+
+	})
 }

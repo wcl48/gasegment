@@ -1,0 +1,16 @@
+build:
+  box: golang:1.6
+  steps:
+    - setup-go-workspace:
+      package-dir: github.com/wcl48/gasegment
+
+    - wercker/golint
+    - script:
+        name: go get
+        code: |
+          go get -t ./...
+
+    - script:
+        name: go test
+        code: |
+          go test ./...

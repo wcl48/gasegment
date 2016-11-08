@@ -274,4 +274,74 @@ func TestTransform(t *testing.T) {
 		assertJSONEqual(t, expectedJSON, transformedJSON)
 
 	})
+
+	t.Run("appendix 3 greater than and between", func(t *testing.T) {
+		s := "sessions::condition::ga:sessionCount>2;ga:sessionCount<>2_3;ga:hits>10;ga:hits<>10_100"
+		expectedJSON := `
+{
+  "name": "segment_name",
+  "sessionSegment": {
+    "segmentFilters": [
+      {
+        "simpleSegment": {
+          "orFiltersForSegment": [
+            {
+              "segmentFilterClauses": [
+                {
+                  "dimensionFilter": {
+                    "dimensionName": "ga:sessionCount",
+                    "operator": "NUMERIC_GREATER_THAN",
+                    "expressions": [
+                      "2"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "segmentFilterClauses": [
+                {
+                  "dimensionFilter": {
+                    "maxComparisonValue": "3",
+                    "dimensionName": "ga:sessionCount",
+                    "operator": "NUMERIC_BETWEEN",
+                    "minComparisonValue": "2"
+                  }
+                }
+              ]
+            },
+            {
+              "segmentFilterClauses": [
+                {
+                  "metricFilter": {
+                    "comparisonValue": "10",
+                    "operator": "GREATER_THAN",
+                    "metricName": "ga:hits"
+                  }
+                }
+              ]
+            },
+            {
+              "segmentFilterClauses": [
+                {
+                  "metricFilter": {
+                    "comparisonValue": "10",
+                    "maxComparisonValue": "100",
+                    "operator": "BETWEEN",
+                    "metricName": "ga:hits"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+`
+		transformedJSON := stringToPayload(t, s, "segment_name")
+		assertJSONEqual(t, expectedJSON, transformedJSON)
+
+	})
 }

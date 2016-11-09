@@ -222,7 +222,7 @@ const (
 var filterTypeMap map[gasegment.DimensionOrMetric]FilterType
 
 func init() {
-	filterTypeMap = make(map[gasegment.DimensionOrMetric]FilterType)
+	filterTypeMap = map[gasegment.DimensionOrMetric]FilterType{}
 }
 
 // detectFilterType : detects filter type (primitive)

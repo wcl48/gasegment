@@ -10,14 +10,14 @@ import (
 	analytics "google.golang.org/api/analytics/v3"
 )
 
-func checkStringify(t *testing.T, set testset) {
+func checkStringify(t *testing.T, set TestSet) {
 	act := set.object.DefString()
 	if act != set.definition {
 		t.Errorf("failed to stringify\n\texpected: %s\n\tactual:   %s", set.definition, act)
 	}
 }
 
-func checkParse(t *testing.T, set testset) {
+func checkParse(t *testing.T, set TestSet) {
 	act, err := Parse(set.definition)
 	if err != nil {
 		t.Error(err)
@@ -39,7 +39,7 @@ func TestSegment(t *testing.T) {
 		checkParse(t, s)
 	}
 
-	for _, def := range checkDefs {
+	for _, def := range TestCheckDefs {
 		s, err := Parse(def)
 		if err != nil {
 			t.Error(err)

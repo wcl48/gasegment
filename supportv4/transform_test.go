@@ -344,6 +344,62 @@ func TestTransform(t *testing.T) {
 		assertJSONEqual(t, expectedJSON, transformedJSON)
 
 	})
+	t.Run("appendix 4 with Precedes", func(t *testing.T) {
+		s := "users::sequence::ga:deviceCategory==desktop;->ga:deviceCategory==tablet"
+		expectedJSON := `
+{
+  "name": "segment_name",
+  "userSegment": {
+    "segmentFilters": [
+      {
+        "sequenceSegment": {
+          "segmentSequenceSteps": [
+            {
+              "orFiltersForSegment": [
+                {
+                  "segmentFilterClauses": [
+                    {
+                      "dimensionFilter": {
+                        "dimensionName": "ga:deviceCategory",
+                        "operator": "EXACT",
+                        "expressions": [
+                          "desktop"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "orFiltersForSegment": [
+                {
+                  "segmentFilterClauses": [
+                    {
+                      "dimensionFilter": {
+                        "dimensionName": "ga:deviceCategory",
+                        "operator": "EXACT",
+                        "expressions": [
+                          "tablet"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "matchType": "IMMEDIATELY_PRECEDES"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+`
+		transformedJSON := stringToPayload(t, s, "segment_name")
+		assertJSONEqual(t, expectedJSON, transformedJSON)
+
+	})
 
 }
 

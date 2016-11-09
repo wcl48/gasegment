@@ -212,7 +212,7 @@ func TransformExpression(expr *gasegment.Expression) (*gapi.SegmentFilterClause,
 
 // NewDimensionFilterClause : creates filter clause for dimension filter
 func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClause, error) {
-	op, ok, err := DetectOperatorOnDimension(expr.Operator)
+	op, not, err := DetectOperatorOnDimension(expr.Operator)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
 		return &gapi.SegmentFilterClause{
-			Not: !ok,
+			Not: not,
 			DimensionFilter: &gapi.SegmentDimensionFilter{
 				// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
 				DimensionName:      expr.Target.String(),
@@ -231,7 +231,7 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 		}, nil
 	}
 	return &gapi.SegmentFilterClause{
-		Not: !ok,
+		Not: not,
 		DimensionFilter: &gapi.SegmentDimensionFilter{
 			// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
 			DimensionName: expr.Target.String(),
@@ -243,7 +243,7 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 
 // NewMetricFilterClause : creates filter clause for metric filter
 func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClause, error) {
-	op, ok, err := DetectOperatorOnMetric(expr.Operator)
+	op, not, err := DetectOperatorOnMetric(expr.Operator)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +251,7 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
 		return &gapi.SegmentFilterClause{
-			Not: !ok,
+			Not: not,
 			MetricFilter: &gapi.SegmentMetricFilter{
 				// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
 				MetricName:         expr.Target.String(),
@@ -262,7 +262,7 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 		}, nil
 	}
 	return &gapi.SegmentFilterClause{
-		Not: !ok,
+		Not: not,
 		MetricFilter: &gapi.SegmentMetricFilter{
 			// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
 			MetricName:      expr.Target.String(),

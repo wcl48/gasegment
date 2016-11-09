@@ -85,7 +85,7 @@ const (
 )
 
 // DetectOperatorOnMetric :
-func DetectOperatorOnMetric(op gasegment.Operator) (opStr string, ok bool, err error) {
+func DetectOperatorOnMetric(op gasegment.Operator) (opStr string, not bool, err error) {
 	// Operator: Specifies is the operation to perform to compare the
 	// metric. The default
 	// is `EQUAL`.
@@ -103,33 +103,33 @@ func DetectOperatorOnMetric(op gasegment.Operator) (opStr string, ok bool, err e
 	// We will use `LT` and `GT` for comparison.
 	switch op {
 	case gasegment.Equal:
-		return OperatorEqual, true, nil
-	case gasegment.NotEqual:
 		return OperatorEqual, false, nil
+	case gasegment.NotEqual:
+		return OperatorEqual, true, nil
 	case gasegment.LessThan:
-		return OperatorLessThan, true, nil
+		return OperatorLessThan, false, nil
 	case gasegment.LessThanEqual:
 		// x <= y == !(x > y)
-		return OperatorGreaterThan, false, nil
-	case gasegment.GreaterThan:
 		return OperatorGreaterThan, true, nil
+	case gasegment.GreaterThan:
+		return OperatorGreaterThan, false, nil
 	case gasegment.GreaterThanEqual:
 		// x >= y == !(x < y)
-		return OperatorLessThan, false, nil
+		return OperatorLessThan, true, nil
 	case gasegment.Between:
-		return OperatorBetween, true, nil
+		return OperatorBetween, false, nil
 	// case gasegment.InList:
 	// case gasegment.ContainsSubstring:
 	// case gasegment.NotContainsSubstring:
 	// case gasegment.Regexp:
 	// case gasegment.NotRegexp:
 	default:
-		return "", true, fmt.Errorf("unspecified operator on metric %v", op)
+		return "", false, fmt.Errorf("unspecified operator on metric %v", op)
 	}
 }
 
 // DetectOperatorOnDimension :
-func DetectOperatorOnDimension(op gasegment.Operator) (opStr string, ok bool, err error) {
+func DetectOperatorOnDimension(op gasegment.Operator) (opStr string, not bool, err error) {
 	// Operator: The operator to use to match the dimension with the
 	// expressions.
 	//
@@ -179,33 +179,33 @@ func DetectOperatorOnDimension(op gasegment.Operator) (opStr string, ok bool, er
 	// of the match expression, boundaries excluded.
 	switch op {
 	case gasegment.Equal:
-		return OperatorExact, true, nil
-	case gasegment.NotEqual:
 		return OperatorExact, false, nil
+	case gasegment.NotEqual:
+		return OperatorExact, true, nil
 	case gasegment.LessThan:
-		return OperatorNumericLessThan, true, nil
+		return OperatorNumericLessThan, false, nil
 	case gasegment.LessThanEqual:
 		// x <= y == !(x > y)
-		return OperatorNumericGreaterThan, false, nil
-	case gasegment.GreaterThan:
 		return OperatorNumericGreaterThan, true, nil
+	case gasegment.GreaterThan:
+		return OperatorNumericGreaterThan, false, nil
 	case gasegment.GreaterThanEqual:
 		// x >= y == !(x < y)
-		return OperatorNumericLessThan, false, nil
+		return OperatorNumericLessThan, true, nil
 	case gasegment.Between:
-		return OperatorNumericBetween, true, nil
+		return OperatorNumericBetween, false, nil
 	case gasegment.InList:
-		return OperatorInList, true, nil
+		return OperatorInList, false, nil
 	case gasegment.ContainsSubstring:
-		return OperatorPartial, true, nil
-	case gasegment.NotContainsSubstring:
 		return OperatorPartial, false, nil
+	case gasegment.NotContainsSubstring:
+		return OperatorPartial, true, nil
 	case gasegment.Regexp:
-		return OperatorRegexp, true, nil
-	case gasegment.NotRegexp:
 		return OperatorRegexp, false, nil
+	case gasegment.NotRegexp:
+		return OperatorRegexp, true, nil
 	default:
-		return "", true, fmt.Errorf("unspecified operator on dimension %v", op)
+		return "", false, fmt.Errorf("unspecified operator on dimension %v", op)
 	}
 }
 

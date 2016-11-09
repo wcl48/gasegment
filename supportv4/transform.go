@@ -10,6 +10,9 @@ import (
 
 // TransformSegments : transform Seguments to DynamicSegment
 func TransformSegments(segments *gasegment.Segments) (*gapi.DynamicSegment, error) {
+	if segments == nil {
+		return nil, nil
+	}
 	name := "-"
 	segmentSet := []gasegment.Segment(*segments)
 	sessionSegmentFilters := make([]*gapi.SegmentFilter, 0, len(segmentSet))
@@ -55,6 +58,9 @@ func TransformSegments(segments *gasegment.Segments) (*gapi.DynamicSegment, erro
 
 // TransformSegment : transform Segument to DynamicSegment
 func TransformSegment(segment *gasegment.Segment) (*gapi.DynamicSegment, error) {
+	if segment == nil {
+		return nil, nil
+	}
 	name := "-"
 	switch segment.Scope {
 	case gasegment.UserScope:
@@ -86,6 +92,9 @@ func TransformSegment(segment *gasegment.Segment) (*gapi.DynamicSegment, error) 
 
 // NewSegmentFilter : creates segmentFilter from segment
 func NewSegmentFilter(segment *gasegment.Segment) (*gapi.SegmentFilter, error) {
+	if segment == nil {
+		return nil, nil
+	}
 	switch segment.Type {
 	case gasegment.ConditionSegment:
 		return TransformCondition(&segment.Condition)
@@ -98,6 +107,9 @@ func NewSegmentFilter(segment *gasegment.Segment) (*gapi.SegmentFilter, error) {
 
 // TransformSequence : transform Sequence to SegmentFilter
 func TransformSequence(sequence *gasegment.Sequence) (*gapi.SegmentFilter, error) {
+	if sequence == nil {
+		return nil, nil
+	}
 	steps, err := TransformSequenceSteps(&sequence.SequenceSteps)
 	if err != nil {
 		return nil, err
@@ -113,6 +125,9 @@ func TransformSequence(sequence *gasegment.Sequence) (*gapi.SegmentFilter, error
 
 // TransformSequenceSteps : transform SequenceSteps to []*SegmentSequenceStep
 func TransformSequenceSteps(src *gasegment.SequenceSteps) ([]*gapi.SegmentSequenceStep, error) {
+	if src == nil {
+		return nil, nil
+	}
 	steps := []gasegment.SequenceStep(*src)
 	dst := make([]*gapi.SegmentSequenceStep, len(steps))
 	for i, srcStep := range steps {
@@ -127,6 +142,9 @@ func TransformSequenceSteps(src *gasegment.SequenceSteps) ([]*gapi.SegmentSequen
 
 // TransformSequqnceStep : transform SequenceStep to SegmentSequenceStep
 func TransformSequqnceStep(step *gasegment.SequenceStep) (*gapi.SegmentSequenceStep, error) {
+	if step == nil {
+		return nil, nil
+	}
 	matchType, err := DetectMatchType(step.Type)
 	orSegments, err := TransformAndExpression(&step.AndExpression)
 	if err != nil {
@@ -140,6 +158,9 @@ func TransformSequqnceStep(step *gasegment.SequenceStep) (*gapi.SegmentSequenceS
 
 // TransformCondition : transform Condition to SegmentFilter
 func TransformCondition(condition *gasegment.Condition) (*gapi.SegmentFilter, error) {
+	if condition == nil {
+		return nil, nil
+	}
 	orSegments, err := TransformAndExpression(&condition.AndExpression)
 	if err != nil {
 		return nil, err
@@ -154,6 +175,9 @@ func TransformCondition(condition *gasegment.Condition) (*gapi.SegmentFilter, er
 
 // TransformAndExpression : transform AndExpression to []*OrFiltersForSegment
 func TransformAndExpression(andExpression *gasegment.AndExpression) ([]*gapi.OrFiltersForSegment, error) {
+	if andExpression == nil {
+		return nil, nil
+	}
 	orExprs := []gasegment.OrExpression(*andExpression)
 	orSegments := make([]*gapi.OrFiltersForSegment, len(orExprs))
 	for i, orExpr := range orExprs {
@@ -168,6 +192,9 @@ func TransformAndExpression(andExpression *gasegment.AndExpression) ([]*gapi.OrF
 
 // TransformOrExpression : transform OrExpression to OrFiltersForSegment
 func TransformOrExpression(orExpression *gasegment.OrExpression) (*gapi.OrFiltersForSegment, error) {
+	if orExpression == nil {
+		return nil, nil
+	}
 	exprs := []gasegment.Expression(*orExpression)
 	clauses := make([]*gapi.SegmentFilterClause, len(exprs))
 	for i, expr := range exprs {
@@ -182,6 +209,9 @@ func TransformOrExpression(orExpression *gasegment.OrExpression) (*gapi.OrFilter
 
 // TransformExpression : transform expression to filter clause
 func TransformExpression(expr *gasegment.Expression) (*gapi.SegmentFilterClause, error) {
+	if expr == nil {
+		return nil, nil
+	}
 	ftype, err := DetectFilterType(expr.Target)
 	if err != nil {
 		return nil, err
@@ -198,6 +228,9 @@ func TransformExpression(expr *gasegment.Expression) (*gapi.SegmentFilterClause,
 
 // NewDimensionFilterClause : creates filter clause for dimension filter
 func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClause, error) {
+	if expr == nil {
+		return nil, nil
+	}
 	op, not, err := DetectOperatorOnDimension(expr.Operator)
 	if err != nil {
 		return nil, err
@@ -229,6 +262,9 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 
 // NewMetricFilterClause : creates filter clause for metric filter
 func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClause, error) {
+	if expr == nil {
+		return nil, nil
+	}
 	op, not, err := DetectOperatorOnMetric(expr.Operator)
 	if err != nil {
 		return nil, err

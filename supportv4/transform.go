@@ -96,20 +96,6 @@ func NewSegmentFilter(segment *gasegment.Segment) (*gapi.SegmentFilter, error) {
 	}
 }
 
-// NewSessionDynamicSegment : creates dynamic segment for session segment
-func NewSessionDynamicSegment(name string, segment *gasegment.Segment) (*gapi.DynamicSegment, error) {
-	segmentFilter, err := TransformSequence(&segment.Sequence)
-	if err != nil {
-		return nil, err
-	}
-	return &gapi.DynamicSegment{
-		Name: name,
-		SessionSegment: &gapi.SegmentDefinition{
-			SegmentFilters: []*gapi.SegmentFilter{segmentFilter},
-		},
-	}, nil
-}
-
 // TransformSequence : transform Sequence to SegmentFilter
 func TransformSequence(sequence *gasegment.Sequence) (*gapi.SegmentFilter, error) {
 	steps, err := TransformSequenceSteps(&sequence.SequenceSteps)

@@ -238,6 +238,9 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 	if expr.Operator == gasegment.Between {
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
+		if len(vs) != 2 {
+			return nil, fmt.Errorf("required format is '<>{min_value}_{max_value}', but %q", expr.Value)
+		}
 		return &gapi.SegmentFilterClause{
 			Not: not,
 			DimensionFilter: &gapi.SegmentDimensionFilter{
@@ -272,6 +275,9 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 	if expr.Operator == gasegment.Between {
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
+		if len(vs) != 2 {
+			return nil, fmt.Errorf("required format is '<>{min_value}_{max_value}', but %q", expr.Value)
+		}
 		return &gapi.SegmentFilterClause{
 			Not: not,
 			MetricFilter: &gapi.SegmentMetricFilter{

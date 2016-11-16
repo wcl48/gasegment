@@ -29,3 +29,36 @@ func main() {
 	fmt.Println(segments.DefString())
 }
 ```
+
+## Commandline
+
+```
+$ go get -v github.com/wcl48/gasegment/cmd/gasegment
+$ echo "sessions::condition::ga:medium==referral"  | gasegment
+{
+  "name": "-",
+  "sessionSegment": {
+    "segmentFilters": [
+      {
+        "simpleSegment": {
+          "orFiltersForSegment": [
+            {
+              "segmentFilterClauses": [
+                {
+                  "dimensionFilter": {
+                    "dimensionName": "ga:medium",
+                    "expressions": [
+                      "referral"
+                    ],
+                    "operator": "EXACT"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+```

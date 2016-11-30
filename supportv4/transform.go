@@ -235,7 +235,8 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 	if err != nil {
 		return nil, err
 	}
-	if expr.Operator == gasegment.Between {
+	switch expr.Operator {
+	case gasegment.Between:
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
 		if len(vs) != 2 {
@@ -251,16 +252,32 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 				MaxComparisonValue: vs[1],
 			},
 		}, nil
+	case gasegment.InList:
+		vs := parseInListValue(expr.Value)
+		return &gapi.SegmentFilterClause{
+			Not: not,
+			DimensionFilter: &gapi.SegmentDimensionFilter{
+				// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
+				DimensionName: expr.Target.String(),
+				Operator:      op,
+				Expressions:   vs,
+			},
+		}, nil
+	default:
+		return &gapi.SegmentFilterClause{
+			Not: not,
+			DimensionFilter: &gapi.SegmentDimensionFilter{
+				// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
+				DimensionName: expr.Target.String(),
+				Operator:      op,
+				Expressions:   []string{expr.Value},
+			},
+		}, nil
 	}
-	return &gapi.SegmentFilterClause{
-		Not: not,
-		DimensionFilter: &gapi.SegmentDimensionFilter{
-			// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
-			DimensionName: expr.Target.String(),
-			Operator:      op,
-			Expressions:   []string{expr.Value},
-		},
-	}, nil
+}
+
+func parseInListValue(v string) []string {
+	return ParseStringWithEscape(v, '|', '\\')
 }
 
 // NewMetricFilterClause : creates filter clause for metric filter

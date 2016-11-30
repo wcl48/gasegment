@@ -1,9 +1,5 @@
 package gasegment
 
-import (
-	analyticsreporting "google.golang.org/api/analyticsreporting/v4"
-)
-
 // transform gasegment.Segment -> analyticsreporting.DynamicSegment
 // go get -v google.golang.org/api/analyticsreporting/v4
 // (https://github.com/google/google-api-go-client/blob/master/analyticsreporting/v4/analyticsreporting-gen.go)

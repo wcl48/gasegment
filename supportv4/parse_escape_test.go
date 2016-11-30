@@ -11,11 +11,11 @@ func TestParseInListValue(t *testing.T) {
 		value    string
 		expected []string
 	}{
-		{value: "foo bar", expected: []string{"foo bar"}},
-		{value: "foo|bar", expected: []string{"foo", "bar"}},
-		{value: "foo\\|bar", expected: []string{"foo|bar"}},
-		{value: "foo\\\\|bar", expected: []string{"foo\\", "bar"}},
-		{value: "foo\a\\|bar", expected: []string{"foo\a|bar"}},
+		{value: `foo bar`, expected: []string{"foo bar"}},
+		{value: `foo|bar`, expected: []string{"foo", "bar"}},
+		{value: `foo\|bar`, expected: []string{"foo|bar"}},
+		{value: `foo\\|bar`, expected: []string{"foo\\", "bar"}},
+		{value: `foo\a\|bar`, expected: []string{"fooa|bar"}},
 	}
 
 	for _, c := range candidates {

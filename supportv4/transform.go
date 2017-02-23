@@ -137,6 +137,17 @@ func TransformSequenceSteps(src *gasegment.SequenceSteps) ([]*gapi.SegmentSequen
 		}
 		dst[i] = dstStep
 	}
+
+	// fix issues: #11
+	for i := 0; i < len(dst)-1; i++ {
+		leftIdx := i
+		rightIdx := i + 1
+		dst[leftIdx].MatchType = dst[rightIdx].MatchType
+	}
+	if len(dst) > 0 {
+		dst[len(dst)-1].MatchType = MatchTypeUnspecfied
+	}
+
 	return dst, nil
 }
 

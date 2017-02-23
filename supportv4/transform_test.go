@@ -111,6 +111,7 @@ func TestTransform(t *testing.T) {
       {
         "sequenceSegment": {
           "segmentSequenceSteps": [{
+            "matchType": "PRECEDES",
             "orFiltersForSegment": [{
               "segmentFilterClauses": [{
                 "dimensionFilter": {
@@ -121,7 +122,6 @@ func TestTransform(t *testing.T) {
               }]
             }]
           },{
-            "matchType": "PRECEDES",
             "orFiltersForSegment": [{
               "segmentFilterClauses": [{
                 "dimensionFilter": {
@@ -369,7 +369,8 @@ func TestTransform(t *testing.T) {
                     }
                   ]
                 }
-              ]
+              ],
+              "matchType": "IMMEDIATELY_PRECEDES"
             },
             {
               "orFiltersForSegment": [
@@ -386,8 +387,7 @@ func TestTransform(t *testing.T) {
                     }
                   ]
                 }
-              ],
-              "matchType": "IMMEDIATELY_PRECEDES"
+              ]
             }
           ]
         }

@@ -1,10 +1,10 @@
 package supportv4
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
 	gapi "google.golang.org/api/analyticsreporting/v4"
 )
 
@@ -58,12 +58,68 @@ func V3StringifySegmentFilter(node *gapi.SegmentFilter) (string, error) {
 		if node.Not {
 			inner = "!" + inner
 		}
-		return "conditions::" + inner, nil
+		return "condition::" + inner, nil
 	}
 	if node.SequenceSegment != nil {
-		return "", errors.New("TODO")
+		// from gasegment's implementation: FirstStepShouldMatchFirstHit + Not is "!^"
+		inner, err := V3StringifySequenceSegment(node.SequenceSegment)
+		if err != nil {
+			return "", err
+		}
+		if node.Not {
+			inner = "!" + inner
+		}
+		return "sequence::" + inner, nil
 	}
 	return "", errors.New("at least either a simple or a sequence segment")
+}
+
+// V3StringifySequenceSegment :
+func V3StringifySequenceSegment(node *gapi.SequenceSegment) (string, error) {
+	if node == nil {
+		return "", nil
+	}
+	prefix := ""
+	if node.FirstStepShouldMatchFirstHit {
+		prefix = "^"
+	}
+	outer := make([]string, 0, len(node.SegmentSequenceSteps))
+	for i, step := range node.SegmentSequenceSteps {
+		var bop string
+		isFirst := i == 0
+		if !isFirst {
+			// see also: ./detect.go DetectMatchType
+			prevStep := node.SegmentSequenceSteps[i-1]
+			switch prevStep.MatchType {
+			case MatchTypeUnspecfied:
+				bop = ";->>" // Unspecified match type is treated as precedes.
+			case MatchTypePrecedes:
+				bop = ";->>"
+			case MatchTypeImmediatelyPrecedes:
+				bop = ";->"
+			}
+		}
+
+		// step.MatchType
+		inner := make([]string, 0, len(step.OrFiltersForSegment))
+		for _, orFilter := range step.OrFiltersForSegment {
+			expression, err := V3StringifyOrFiltersForSegment(orFilter)
+			if err != nil {
+				return "", err
+			}
+			if expression != "" {
+				inner = append(inner, expression)
+			}
+		}
+		if len(inner) > 0 {
+			if isFirst {
+				outer = append(outer, strings.Join(inner, ";"))
+			} else {
+				outer = append(outer, bop, strings.Join(inner, ";"))
+			}
+		}
+	}
+	return fmt.Sprintf("%s%s", prefix, strings.Join(outer, "")), nil
 }
 
 // V3StringifySimpleSegment :
@@ -73,19 +129,30 @@ func V3StringifySimpleSegment(node *gapi.SimpleSegment) (string, error) {
 	}
 	outer := make([]string, 0, len(node.OrFiltersForSegment))
 	for _, orFilter := range node.OrFiltersForSegment {
-		inner := make([]string, 0, len(orFilter.SegmentFilterClauses))
-		for _, segmentFilter := range orFilter.SegmentFilterClauses {
-			expression, err := V3StringifySegmentFilterClause(segmentFilter)
-			if err != nil {
-				return "", err
-			}
-			inner = append(inner, expression)
+		inner, err := V3StringifyOrFiltersForSegment(orFilter)
+		if err != nil {
+			return "", err
 		}
-		if len(inner) > 0 {
-			outer = append(outer, strings.Join(inner, ","))
+		if inner != "" {
+			outer = append(outer, inner)
 		}
 	}
 	return strings.Join(outer, ";"), nil
+}
+
+// V3StringifyOrFiltersForSegment :
+func V3StringifyOrFiltersForSegment(node *gapi.OrFiltersForSegment) (string, error) {
+	outer := make([]string, 0, len(node.SegmentFilterClauses))
+	for _, segmentFilter := range node.SegmentFilterClauses {
+		inner, err := V3StringifySegmentFilterClause(segmentFilter)
+		if err != nil {
+			return "", err
+		}
+		if inner != "" {
+			outer = append(outer, inner)
+		}
+	}
+	return strings.Join(outer, ","), nil
 }
 
 // V3StringifySegmentFilterClause :
@@ -126,7 +193,6 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		}
 		return fmt.Sprintf("%s=~%s", node.DimensionName, node.Expressions[0]), nil
 	case OperatorBeginsWith:
-		// TODO: need regex.QuoteMeta() ?
 		if not {
 			return fmt.Sprintf("%s!~%s", node.DimensionName, "^"+node.Expressions[0]), nil
 		}
@@ -148,9 +214,8 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		return fmt.Sprintf("%s==%s", node.DimensionName, node.Expressions[0]), nil
 	case OperatorInList:
 		// TODO: limitation of number of expressions <= 10
-		// TODO: need escape?
 		if not {
-			return "", fmt.Errorf("not support %q with Not=true", OperatorInList)
+			return "", errors.Errorf("not support %q with Not=true", OperatorInList)
 		}
 		return fmt.Sprintf("%s[]%s", node.DimensionName, strings.Join(node.Expressions, "|")), nil
 	case OperatorNumericLessThan:
@@ -165,11 +230,11 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		return fmt.Sprintf("%s>%s", node.DimensionName, node.Expressions[0]), nil
 	case OperatorNumericBetween:
 		if not {
-			return "", fmt.Errorf("not support %q with Not=true", OperatorNumericBetween)
+			return "", errors.Errorf("not support %q with Not=true", OperatorNumericBetween)
 		}
 		return fmt.Sprintf("%s<>%s_%s", node.DimensionName, node.Expressions[0], node.Expressions[1]), nil
 	default:
-		return "", fmt.Errorf("unsupported dimension operator: %s", op)
+		return "", errors.Errorf("unsupported dimension operator: %s", op)
 	}
 }
 
@@ -179,7 +244,6 @@ func V3StringifySegmentMetricFilter(node *gapi.SegmentMetricFilter, not bool) (s
 		return "", nil
 	}
 
-	// TODO: node.Scope
 	// "OPERATOR_UNSPECIFIED" - If the match type is unspecified, it is treated as a REGEXP.
 	op := node.Operator
 	if op == "OPERATOR_UNSPECIFIED" {
@@ -216,10 +280,10 @@ func V3StringifySegmentMetricFilter(node *gapi.SegmentMetricFilter, not bool) (s
 		return fmt.Sprintf("%s%s>%s", scopePrefix, node.MetricName, node.ComparisonValue), nil
 	case OperatorBetween:
 		if not {
-			return "", fmt.Errorf("not support %q with Not=true", OperatorBetween)
+			return "", errors.Errorf("not support %q with Not=true", OperatorBetween)
 		}
 		return fmt.Sprintf("%s%s<>%s_%s", scopePrefix, node.MetricName, node.ComparisonValue, node.MaxComparisonValue), nil
 	default:
-		return "", fmt.Errorf("unsupported metric operator: %s", op)
+		return "", errors.Errorf("unsupported metric operator: %s", op)
 	}
 }

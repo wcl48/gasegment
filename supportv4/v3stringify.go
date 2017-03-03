@@ -2,6 +2,7 @@ package supportv4
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -205,14 +206,14 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		return fmt.Sprintf("%s=~%s", node.DimensionName, node.Expressions[0]), nil
 	case OperatorBeginsWith:
 		if not {
-			return fmt.Sprintf("%s!~%s", node.DimensionName, "^"+node.Expressions[0]), nil
+			return fmt.Sprintf("%s!~%s", node.DimensionName, "^"+regexp.QuoteMeta(node.Expressions[0])), nil
 		}
-		return fmt.Sprintf("%s=~%s", node.DimensionName, "^"+node.Expressions[0]), nil
+		return fmt.Sprintf("%s=~%s", node.DimensionName, "^"+regexp.QuoteMeta(node.Expressions[0])), nil
 	case OperatorEndsWith:
 		if not {
-			return fmt.Sprintf("%s!~%s", node.DimensionName, node.Expressions[0]+"$"), nil
+			return fmt.Sprintf("%s!~%s", node.DimensionName, regexp.QuoteMeta(node.Expressions[0])+"$"), nil
 		}
-		return fmt.Sprintf("%s=~%s", node.DimensionName, node.Expressions[0]+"$"), nil
+		return fmt.Sprintf("%s=~%s", node.DimensionName, regexp.QuoteMeta(node.Expressions[0])+"$"), nil
 	case OperatorPartial:
 		if not {
 			return fmt.Sprintf("%s!@%s", node.DimensionName, node.Expressions[0]), nil

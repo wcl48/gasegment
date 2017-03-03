@@ -99,7 +99,6 @@ func V3StringifySequenceSegment(node *gapi.SequenceSegment) (string, error) {
 				bop = ";->"
 			}
 		}
-
 		// step.MatchType
 		inner := make([]string, 0, len(step.OrFiltersForSegment))
 		for _, orFilter := range step.OrFiltersForSegment {
@@ -180,7 +179,7 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 	if op == "OPERATOR_UNSPECIFIED" || op == "" {
 		op = OperatorRegexp
 	}
-	if len(node.Expressions) == 0 {
+	if len(node.Expressions) == 0 && op != OperatorNumericBetween {
 		return "", errors.New("invalid expression. at least length >= 1")
 	}
 	// see also: ./detect.go DetectOperatorOnDimension
@@ -232,7 +231,7 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		if not {
 			return "", errors.Errorf("not support %q with Not=true", OperatorNumericBetween)
 		}
-		return fmt.Sprintf("%s<>%s_%s", node.DimensionName, node.Expressions[0], node.Expressions[1]), nil
+		return fmt.Sprintf("%s<>%s_%s", node.DimensionName, node.MinComparisonValue, node.MaxComparisonValue), nil
 	default:
 		return "", errors.Errorf("unsupported dimension operator: %s", op)
 	}

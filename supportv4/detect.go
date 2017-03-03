@@ -82,6 +82,7 @@ const (
 	OperatorNumericLessThan    = "NUMERIC_LESS_THAN"
 	OperatorNumericGreaterThan = "NUMERIC_GREATER_THAN"
 	OperatorNumericBetween     = "NUMERIC_BETWEEN"
+	OperatorNumericEquals      = "NUMERIC_EQUALS"
 )
 
 // DetectOperatorOnMetric :

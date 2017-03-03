@@ -39,7 +39,6 @@ func TestReversible(t *testing.T) {
 		"users::sequence::!^ga:pagePath==/aiueo;->ga:pagePath==/aiueo2;->>ga:pagePath==/aiueo3",
 		"users::sequence::!^ga:pagePath==/aiueo;->>ga:pagePath==/aiueo2;->ga:pagePath==/aiueo3",
 		"users::sequence::^ga:sessionCount==1;dateOfSession<>2014-05-20_2014-05-30;->>ga:sessionDurationBucket>600",
-		"sessions::condition::ga:pagePath"
 	}
 
 	for i, defstring := range candidates {

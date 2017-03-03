@@ -52,3 +52,18 @@ func TestReversible(t *testing.T) {
 		})
 	}
 }
+
+func TestReversible2(t *testing.T) {
+	for i, defstring := range gasegment.TestCheckDefs {
+		defstring := defstring
+		t.Run(fmt.Sprintf("reversible%d", i), func(t *testing.T) {
+			result, err := fullTransform(defstring)
+			if err != nil {
+				t.Fatalf("no error required in %q. but %v is occured", defstring, err)
+			}
+			if result != defstring {
+				t.Errorf("\nexpected:\n\t%q\ngot:\n\t%q", defstring, result)
+			}
+		})
+	}
+}

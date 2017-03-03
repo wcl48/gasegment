@@ -10,6 +10,14 @@ import (
 
 // V4[AST] -> V3[string]
 
+func escapedJoin(xs []string, sep string, escaped string) string {
+	ys := make([]string, len(xs))
+	for i, x := range xs {
+		ys[i] = strings.Replace(x, sep, escaped, -1)
+	}
+	return strings.Join(ys, sep)
+}
+
 // V3StringifyDynamicSegment :
 func V3StringifyDynamicSegment(node *gapi.DynamicSegment) (string, error) {
 	statements := make([]string, 0, 2)
@@ -116,9 +124,9 @@ func V3StringifySequenceSegment(node *gapi.SequenceSegment) (string, error) {
 		}
 		if len(inner) > 0 {
 			if isFirst {
-				outer = append(outer, strings.Join(inner, ";"))
+				outer = append(outer, escapedJoin(inner, ";", `\;`))
 			} else {
-				outer = append(outer, bop, strings.Join(inner, ";"))
+				outer = append(outer, bop, escapedJoin(inner, ";", `\;`))
 			}
 		}
 	}
@@ -140,7 +148,7 @@ func V3StringifySimpleSegment(node *gapi.SimpleSegment) (string, error) {
 			outer = append(outer, inner)
 		}
 	}
-	return strings.Join(outer, ";"), nil
+	return escapedJoin(outer, ";", `\;`), nil
 }
 
 // V3StringifyOrFiltersForSegment :
@@ -155,7 +163,7 @@ func V3StringifyOrFiltersForSegment(node *gapi.OrFiltersForSegment) (string, err
 			outer = append(outer, inner)
 		}
 	}
-	return strings.Join(outer, ","), nil
+	return escapedJoin(outer, ",", `\,`), nil
 }
 
 // V3StringifySegmentFilterClause :
@@ -220,7 +228,7 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		if not {
 			return "", errors.Errorf("not support %q with Not=true", OperatorInList)
 		}
-		return fmt.Sprintf("%s[]%s", node.DimensionName, strings.Join(node.Expressions, "|")), nil
+		return fmt.Sprintf("%s[]%s", node.DimensionName, escapedJoin(node.Expressions, "|", `\|`)), nil
 	case OperatorNumericLessThan:
 		if not {
 			return fmt.Sprintf("%s>=%s", node.DimensionName, node.Expressions[0]), nil
@@ -235,7 +243,9 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		if not {
 			return "", errors.Errorf("not support %q with Not=true", OperatorNumericBetween)
 		}
-		return fmt.Sprintf("%s<>%s_%s", node.DimensionName, node.MinComparisonValue, node.MaxComparisonValue), nil
+		minValue := strings.Replace(node.MinComparisonValue, "|", `\|`, -1)
+		maxValue := strings.Replace(node.MaxComparisonValue, "|", `\|`, -1)
+		return fmt.Sprintf("%s<>%s_%s", node.DimensionName, minValue, maxValue), nil
 	default:
 		return "", errors.Errorf("unsupported dimension operator: %s", op)
 	}

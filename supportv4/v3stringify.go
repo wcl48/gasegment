@@ -12,21 +12,25 @@ import (
 
 // V3StringifyDynamicSegment :
 func V3StringifyDynamicSegment(node *gapi.DynamicSegment) (string, error) {
-	if node.SessionSegment != nil {
-		inner, err := V3StringifySegmentDefinition(node.SessionSegment)
-		if err != nil {
-			return "", err
-		}
-		return "sessions::" + inner, nil
-	}
+	statements := make([]string, 0, 2)
 	if node.UserSegment != nil {
 		inner, err := V3StringifySegmentDefinition(node.UserSegment)
 		if err != nil {
 			return "", err
 		}
-		return "users::" + inner, nil
+		statements = append(statements, "users::"+inner)
 	}
-	return "", errors.New("at least either a session or a user segment")
+	if node.SessionSegment != nil {
+		inner, err := V3StringifySegmentDefinition(node.SessionSegment)
+		if err != nil {
+			return "", err
+		}
+		statements = append(statements, "sessions::"+inner)
+	}
+	if len(statements) <= 0 {
+		return "", errors.New("at least either a session or a user segment")
+	}
+	return strings.Join(statements, ";"), nil
 }
 
 // V3StringifySegmentDefinition :

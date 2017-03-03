@@ -300,6 +300,10 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 	if err != nil {
 		return nil, err
 	}
+	scope, err := DetectScope(expr.MetricScope)
+	if err != nil {
+		return nil, err
+	}
 	if expr.Operator == gasegment.Between {
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
@@ -309,6 +313,7 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 		return &gapi.SegmentFilterClause{
 			Not: not,
 			MetricFilter: &gapi.SegmentMetricFilter{
+				Scope: scope,
 				// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
 				MetricName:         expr.Target.String(),
 				Operator:           op,
@@ -320,6 +325,7 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 	return &gapi.SegmentFilterClause{
 		Not: not,
 		MetricFilter: &gapi.SegmentMetricFilter{
+			Scope: scope,
 			// CaseSensitive false, // bool `json:"caseSensitive,omitempty"`
 			MetricName:      expr.Target.String(),
 			Operator:        op,

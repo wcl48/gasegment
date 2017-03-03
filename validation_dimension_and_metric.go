@@ -95,6 +95,22 @@ func init() {
 		}
 		dmDefMap[column.Id] = ca
 	}
+
+	// dateOfSession
+	{
+		ca := DimensionOrMetricAttributes{
+			Id:                "dateOfSession",
+			Type:              "DIMENSION",
+			DataType:          "STRING",
+			Group:             "__special__",
+			Status:            "PUBLIC",
+			UIName:            "Date Of Session",
+			AppUIName:         "Date Of Session",
+			Description:       "The date of session started",
+			AllowedInSegments: true,
+		}
+		dmDefMap[ca.Id] = ca
+	}
 }
 
 func GetDimensionOrMetricAttributes(dm string) (DimensionOrMetricAttributes, error) {

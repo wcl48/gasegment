@@ -37,6 +37,9 @@ func TestReversible(t *testing.T) {
 		"sessions::condition::ga:deviceCategory=@mobile;condition::ga:landingPagePath==sp.exampleonline.co.jp/exampleol/www.exampleonline.co.jp/mb/BSfMbCategoryTop.jsp\\;sjid=CB706677EAC2E584171A5582CC8275C6.c?bg=set&guid=on",
 		"sessions::condition::ga:deviceCategory=@desktop;condition::ga:pagePath=@embed,ga:pagePath==/files/embed/cartonbox.html,ga:pagePath=@/files/cp/kaitori,ga:pagePath=@/cd/files/kaitori1307,ga:pagePath==/files/selltop.html;ga:pagePath=@sell,ga:pagePath==/files/embed/cartonbox.html,ga:pagePath=@/files/cp/kaitori,ga:pagePath=@/cd/files/kaitori1307,ga:pagePath==/files/selltop.html",
 		"users::sequence::!^ga:pagePath==/aiueo;->ga:pagePath==/aiueo2;->>ga:pagePath==/aiueo3",
+		"users::sequence::!^ga:pagePath==/aiueo;->>ga:pagePath==/aiueo2;->ga:pagePath==/aiueo3",
+		"users::sequence::^ga:sessionCount==1;dateOfSession<>2014-05-20_2014-05-30;->>ga:sessionDurationBucket>600",
+		"sessions::condition::ga:pagePath"
 	}
 
 	for i, defstring := range candidates {

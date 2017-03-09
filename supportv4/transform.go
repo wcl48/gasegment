@@ -247,7 +247,7 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 		return nil, err
 	}
 	switch expr.Operator {
-	case gasegment.Between:
+	case gasegment.Between, gasegment.NotBetween:
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
 		if len(vs) != 2 {
@@ -263,7 +263,7 @@ func NewDimensionFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterCl
 				MaxComparisonValue: vs[1],
 			},
 		}, nil
-	case gasegment.InList:
+	case gasegment.InList, gasegment.NotInList:
 		vs := parseInListValue(expr.Value)
 		return &gapi.SegmentFilterClause{
 			Not: not,
@@ -304,7 +304,7 @@ func NewMetricFilterClause(expr *gasegment.Expression) (*gapi.SegmentFilterClaus
 	if err != nil {
 		return nil, err
 	}
-	if expr.Operator == gasegment.Between {
+	if expr.Operator == gasegment.Between || expr.Operator == gasegment.NotBetween {
 		// between operator "<>{minvalue}_{maxvalue}" (see: https://developers.google.com/analytics/devguides/reporting/core/v3/segments?hl=ja)
 		vs := strings.SplitN(expr.Value, "_", 2)
 		if len(vs) != 2 {

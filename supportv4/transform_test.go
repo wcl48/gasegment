@@ -414,8 +414,29 @@ func TestBrokenBetween(t *testing.T) {
 			t.Error("must be error")
 		}
 	})
+	t.Run("on metric(not)", func(t *testing.T) {
+		invalid := "sessions::condition::ga:hits<>10" // not ga:hits<>10_20
+		segments, err := gasegment.Parse(invalid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := TransformSegments(&segments); err == nil {
+			t.Error("must be error")
+		}
+	})
+
 	t.Run("on dimension", func(t *testing.T) {
-		invalid := "sessions::condition::ga:sessionCount<>10" // not ga:hits<>10_20
+		invalid := "sessions::condition::ga:sessionCount!<>10" // not ga:sessionCount!<>10_20
+		segments, err := gasegment.Parse(invalid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := TransformSegments(&segments); err == nil {
+			t.Error("must be error")
+		}
+	})
+	t.Run("on dimension(not)", func(t *testing.T) {
+		invalid := "sessions::condition::ga:sessionCount!<>10" // not ga:sessionCount!<>10_20
 		segments, err := gasegment.Parse(invalid)
 		if err != nil {
 			t.Fatal(err)

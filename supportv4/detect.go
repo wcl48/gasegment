@@ -118,6 +118,8 @@ func DetectOperatorOnMetric(op gasegment.Operator) (opStr string, not bool, err 
 		return OperatorLessThan, true, nil
 	case gasegment.Between:
 		return OperatorBetween, false, nil
+	case gasegment.NotBetween:
+		return OperatorBetween, true, nil
 	// case gasegment.InList:
 	// case gasegment.ContainsSubstring:
 	// case gasegment.NotContainsSubstring:
@@ -194,8 +196,12 @@ func DetectOperatorOnDimension(op gasegment.Operator) (opStr string, not bool, e
 		return OperatorNumericLessThan, true, nil
 	case gasegment.Between:
 		return OperatorNumericBetween, false, nil
+	case gasegment.NotBetween:
+		return OperatorNumericBetween, true, nil
 	case gasegment.InList:
 		return OperatorInList, false, nil
+	case gasegment.NotInList:
+		return OperatorInList, true, nil
 	case gasegment.ContainsSubstring:
 		return OperatorPartial, false, nil
 	case gasegment.NotContainsSubstring:

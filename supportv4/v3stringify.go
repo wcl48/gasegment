@@ -226,10 +226,13 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		return fmt.Sprintf("%s==%s", node.DimensionName, node.Expressions[0]), nil
 	case OperatorInList:
 		// TODO: limitation of number of expressions <= 10
+		var op string
 		if not {
-			return "", errors.Errorf("not support %q with Not=true", OperatorInList)
+			op = "![]"
+		} else {
+			op = "[]"
 		}
-		return fmt.Sprintf("%s[]%s", node.DimensionName, escapedJoin(node.Expressions, "|", `\|`)), nil
+		return fmt.Sprintf("%s%s%s", node.DimensionName, op, escapedJoin(node.Expressions, "|", `\|`)), nil
 	case OperatorNumericLessThan:
 		if not {
 			return fmt.Sprintf("%s>=%s", node.DimensionName, node.Expressions[0]), nil
@@ -241,12 +244,15 @@ func V3StringifySegmentDimensionFilter(node *gapi.SegmentDimensionFilter, not bo
 		}
 		return fmt.Sprintf("%s>%s", node.DimensionName, node.Expressions[0]), nil
 	case OperatorNumericBetween:
+		var op string
 		if not {
-			return "", errors.Errorf("not support %q with Not=true", OperatorNumericBetween)
+			op = "!<>"
+		} else {
+			op = "<>"
 		}
 		minValue := strings.Replace(node.MinComparisonValue, "|", `\|`, -1)
 		maxValue := strings.Replace(node.MaxComparisonValue, "|", `\|`, -1)
-		return fmt.Sprintf("%s<>%s_%s", node.DimensionName, minValue, maxValue), nil
+		return fmt.Sprintf("%s%s%s_%s", node.DimensionName, op, minValue, maxValue), nil
 	default:
 		return "", errors.Errorf("unsupported dimension operator: %s", op)
 	}
@@ -294,7 +300,7 @@ func V3StringifySegmentMetricFilter(node *gapi.SegmentMetricFilter, not bool) (s
 		return fmt.Sprintf("%s%s>%s", scopePrefix, node.MetricName, node.ComparisonValue), nil
 	case OperatorBetween:
 		if not {
-			return "", errors.Errorf("not support %q with Not=true", OperatorBetween)
+			return fmt.Sprintf("%s%s!<>%s_%s", scopePrefix, node.MetricName, node.ComparisonValue, node.MaxComparisonValue), nil
 		}
 		return fmt.Sprintf("%s%s<>%s_%s", scopePrefix, node.MetricName, node.ComparisonValue, node.MaxComparisonValue), nil
 	default:

@@ -2,7 +2,7 @@ build:
   box: golang:1.7
   steps:
     - setup-go-workspace:
-      package-dir: github.com/wcl48/gasegment
+      package-dir: github.com/wacul/gasegment
 
     # - wercker/golint
     - script:

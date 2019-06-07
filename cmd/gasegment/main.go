@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/wcl48/gasegment"
-	"github.com/wcl48/gasegment/supportv4"
+	"github.com/wacul/gasegment"
+	"github.com/wacul/gasegment/supportv4"
 	"google.golang.org/api/analyticsreporting/v4"
 )
 

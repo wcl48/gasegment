@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/wcl48/gasegment/asset"
+	"github.com/wacul/gasegment/asset"
 	analytics "google.golang.org/api/analytics/v3"
 )
 

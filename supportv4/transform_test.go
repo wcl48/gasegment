@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/wcl48/gasegment"
+	"github.com/wacul/gasegment"
 )
 
 func TestTransformNotError(t *testing.T) {

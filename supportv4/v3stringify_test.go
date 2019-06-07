@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/wcl48/gasegment"
+	"github.com/wacul/gasegment"
 )
 
 func fullTransform(defstring string) (string, error) {

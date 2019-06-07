@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/wcl48/gasegment"
+	"github.com/wacul/gasegment"
 	gapi "google.golang.org/api/analyticsreporting/v4"
 )
 

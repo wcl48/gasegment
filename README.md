@@ -10,7 +10,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/wcl48/gasegment"
+	"github.com/wacul/gasegment"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 ## Commandline
 
 ```
-$ go get -v github.com/wcl48/gasegment/cmd/gasegment
+$ go get -v github.com/wacul/gasegment/cmd/gasegment
 $ echo "sessions::condition::ga:medium==referral"  | gasegment
 {
   "name": "-",

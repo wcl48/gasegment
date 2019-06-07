@@ -2,7 +2,7 @@ package supportv4
 
 import (
 	"github.com/pkg/errors"
-	"github.com/wcl48/gasegment"
+	"github.com/wacul/gasegment"
 )
 
 // MatchType

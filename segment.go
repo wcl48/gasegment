@@ -5,18 +5,21 @@ import (
 	"strings"
 )
 
+// DimensionOrMetric : for Expression type
 type DimensionOrMetric string
 
 func (dm DimensionOrMetric) String() string {
 	return string(dm)
 }
 
+// Operator : for Operator
 type Operator string
 
 func (op Operator) String() string {
 	return string(op)
 }
 
+// Operator : Operator Candidates
 const (
 	Equal                = Operator("==")
 	NotEqual             = Operator("!=")
@@ -34,34 +37,40 @@ const (
 	NotRegexp            = Operator("!~")
 )
 
+// SegmentScope : custom type for detecting segment scope
 type SegmentScope string
 
 func (cs SegmentScope) String() string {
 	return string(cs)
 }
 
+// SegmentScope : SegmentScope Candidates
 const (
 	UserScope    = SegmentScope("users::")
 	SessionScope = SegmentScope("sessions::")
 )
 
+// SegmentType : custom type for segment
 type SegmentType string
 
 func (ct SegmentType) String() string {
 	return string(ct)
 }
 
+// SegmentType : SegmentType candidates
 const (
 	ConditionSegment = SegmentType("condition::")
 	SequenceSegment  = SegmentType("sequence::")
 )
 
+// MetricScope : custom type for metric scope
 type MetricScope string
 
 func (ms MetricScope) String() string {
 	return string(ms)
 }
 
+// MetricScope : MetricScope Candidates
 const (
 	Default    = MetricScope("")
 	PerHit     = MetricScope("perHit::")
@@ -69,6 +78,7 @@ const (
 	PerUser    = MetricScope("perUser::")
 )
 
+// SequenceStepType : 
 type SequenceStepType string
 
 func (st SequenceStepType) String() string {
